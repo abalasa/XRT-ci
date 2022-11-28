@@ -1,0 +1,63 @@
+name: XRT Build/Install Test CI
+ 
+# Configures trigger:
+# This workflow will be triggered on a pull request created for Master branch
+on:
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Define environment variables
+# Can be accessed as $<envvar> or ${{ env.envvar }} in this workflow
+env:
+  RELEASE: 9999.0
+ 
+jobs:
+  docker_build_env:
+    strategy:
+      matrix:
+        include:
+         - os: centos8
+           packageType: rpm
+        #  - os: al2
+        #    packageType: rpm
+        #  - os: ubuntu2004
+        #    packageType: deb
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Check cache
+      id: cache-docker-${{ matrix.os }}
+      uses: actions/cache@v3
+      with:
+        path: ci/cache/docker/${{ matrix.os }}
+        key: cache-docker-${{ matrix.os }}
+
+    - name: Create image if cache misses
+      if: steps.cache-docker-${{ matrix.os }}.outputs.cache-hit != 'true'
+      run: |
+        cd .github/scripts/docker
+        docker build -f Dockerfile-centos8 -t xrt-build-env-${{ matrix.os }}:latest .
+        mkdir -p ci/cache/docker/${{ matrix.os }}
+        docker save xrt-build-env-${{ matrix.os }}:latest --output ./ci/cache/docker/${{ matrix.os }}/xrt-${{ matrix.os }}.tar
+
+    - name: Use Cached image if cache hits
+      if: steps.cache-docker-${{ matrix.os }}.outputs.cache-hit == 'true'
+      run: docker load --input ./ci/cache/docker/${{ matrix.os }}/xrt-${{ matrix.os }}.tar
+    
+    - name: Build XRT ${{ matrix.os }}
+      if: ${{ matrix.os == 'centos8' }}
+      run:
+        docker run --rm -e DEBUG_DIR=Debug_${{ matrix.packageType }}_${{ matrix.os }} -e REL_DIR=Release_${{ matrix.packageType }}_${{ matrix.os }} -e XRT_VERSION_PATCH=$GITHUB_RUN_NUMBER  -v $GITHUB_WORKSPACE:/opt/xrt/:shared xrt-build-env-${{ matrix.os }}:latest 'sh src/runtime_src/tools/scripts/xrtdeps.sh -docker ; cd build && chmod +x build.sh ; sh build.sh'
+        docker run cd build && chmod +x build.sh && ./build.sh
+      shell: bash
+
+    - name: Stash files
+      # Stash files for using later in the workflow
+      uses: actions/upload-artifact@v2
+      with:
+        name: xrt-${{ matrix.packageType }}-${{ matrix.os }}
+        path: build/Release/xrt_*-xrt.${{ matrix.packageType }}
