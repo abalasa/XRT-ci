@@ -38,6 +38,7 @@ jobs:
     # Set version number and update PATH as git needs to be greater than 2.18
     - name: Set env variables
       run: |
+        env
         echo "XRT_VERSION_PATCH=${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
         echo "PATH=/usr/bin:$PATH" >> $GITHUB_ENV 
 
@@ -174,7 +175,7 @@ jobs:
         shell: bash
       - name: get boardfarm interface code
         run: |
-          ${{ secrets.PROJ_PATH }}/xbb/xrt/prod_pipeline/configs/bin/gen_runner.sh ${resultPath} ${profile_path} ${env.GITHUB_WORKSPACE} ${env.GITHUB_RUN_NUMBER} ${xrt_build_path} xilinx_u50_gen3x4_xdma_2_202010_1 ${env.GITHUB_RUN_NUMBER} ${{ secrets.PROJ_PATH }}/xbb/xrt/prod_pipeline/tests/2023.1/11_28_22_11
+          ${{ secrets.PROJ_PATH }}/xbb/xrt/prod_pipeline/configs/bin/gen_runner.sh ${resultPath} ${profile_path} $GITHUB_WORKSPACE $env.GITHUB_RUN_NUMBER ${xrt_build_path} xilinx_u50_gen3x4_xdma_2_202010_1 $GITHUB_RUN_NUMBER ${{ secrets.PROJ_PATH }}/xbb/xrt/prod_pipeline/tests/2023.1/11_28_22_11
         env: 
           resultPath: "${{ secrets.EXTRACTION_AREA }}/results/${env.GITHUB_RUN_NUMBER}/pcie/hw/xilinx_u50_gen3x4_xdma_2_202010_1"
           profile_path: "${{ secrets.EXTRACTION_AREA }}/results/configs/${env.RELEASE}/pcie/hw/gating.prf"
