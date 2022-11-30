@@ -112,16 +112,16 @@ jobs:
           mv *-xrt.rpm ${{ secrets.EXTRACTION_AREA }}/results/$GITHUB_RUN_NUMBER/rpms/
         shell: bash
   
-  cleanup_rpms:
-    runs-on: self-hosted-centos8
-    needs: [download_rpms]
-    steps:
-      - name: Cleanup rpms on disk
-        if: ${{ always() }}
-        run: |
-          echo "Cleaning up previous run"
-          rm -rf "${{ secrets.EXTRACTION_AREA }}/results/$GITHUB_RUN_NUMBER/rpms"
-        shell: bash
+  # cleanup_rpms:
+  #   runs-on: self-hosted-centos8
+  #   needs: [download_rpms]
+  #   steps:
+  #     - name: Cleanup rpms on disk
+  #       if: ${{ always() }}
+  #       run: |
+  #         echo "Cleaning up previous run"
+  #         rm -rf "${{ secrets.EXTRACTION_AREA }}/results/$GITHUB_RUN_NUMBER/rpms"
+  #       shell: bash
 
 # Testing
 # 1. Emulation
@@ -158,3 +158,25 @@ jobs:
       #     rm -rf $GITHUB_WORKSPACE/xrt_*-xrt.tar.gz
       #     rm -rf ${{ secrets.EXTRACTION_AREA }}/results/$GITHUB_RUN_NUMBER/build/${{ matrix.type }}/${{ matrix.mode }}/
       #   shell: bash
+
+  board_test_prep:
+    runs-on: self-hosted-centos8
+    needs: [download_rpms]
+    steps:
+      - name: get boardfarm interface code
+        run: |
+          git clone https://gitenterprise.xilinx.com/infra/boardfarm-interface.git
+          cd boardfarm-interface/
+          git checkout dev
+          cd docker
+          curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64" -o ./docker-compose
+          chmod +x ./docker-compose
+        shell: bash
+      - name: get boardfarm interface code
+        run: |
+          ${{ secrets.PROJ_PATH }}/xbb/xrt/prod_pipeline/configs/bin/gen_runner.sh ${resultPath} ${profile_path} ${env.GITHUB_WORKSPACE} ${env.GITHUB_RUN_NUMBER} ${xrt_build_path} xilinx_u50_gen3x4_xdma_2_202010_1 ${env.GITHUB_RUN_NUMBER} ${{ secrets.PROJ_PATH }}/xbb/xrt/prod_pipeline/tests/2023.1/11_28_22_11
+        with: 
+          resultPath: "${{ secrets.EXTRACTION_AREA }}/results/${env.GITHUB_RUN_NUMBER}/pcie/hw/xilinx_u50_gen3x4_xdma_2_202010_1"
+          profile_path: "${{ secrets.EXTRACTION_AREA }}/results/configs/${env.RELEASE}/pcie/hw/gating.prf"
+          xrt_build_path: "${{ secrets.EXTRACTION_AREA }}/results/$GITHUB_RUN_NUMBER/rpms"
+        shell: bash
