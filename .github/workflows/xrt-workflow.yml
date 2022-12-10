@@ -19,7 +19,7 @@ on:
 env:
   RELEASE: 2023.1
   TEST_PATH: ${{ secrets.PROJ_PATH }}/xbb/xrt/prod_pipeline/tests/2023.1/12_09_22_07
-  GITHUB_RUN_NUMBER: 11
+
 
 jobs:
   build_lnx_matrix:
@@ -190,7 +190,7 @@ jobs:
           --config-script /proj/sdxbf/beta/src/lib/boardfarm/cmds/pipeline_cmd --test-script ${resultPath}/runner.sh --output-dir ${resultPath} \
           --pipeline xrt --board u50 --debug"
         env: 
-          resultPath: "${{ secrets.EXTRACTION_AREA }}/results/${GITHUB_RUN_NUMBER}/pcie/hw/xilinx_u50_gen3x4_xdma_2_202010_1"
-          profile_path: "${{ secrets.EXTRACTION_AREA }}/configs/${env.RELEASE}/pcie/hw/gating.prf"
-          xrt_build_path: "${{ secrets.EXTRACTION_AREA }}/results/${GITHUB_RUN_NUMBER}/rpms"
+          resultPath: ${{ secrets.EXTRACTION_AREA }}/results/${{env.GITHUB_RUN_NUMBER}}/pcie/hw/xilinx_u50_gen3x4_xdma_2_202010_1
+          profile_path: ${{ secrets.EXTRACTION_AREA }}/configs/${{env.RELEASE}}/pcie/hw/gating.prf
+          xrt_build_path: ${{ secrets.EXTRACTION_AREA }}/results/${{env.GITHUB_RUN_NUMBER}}/rpms
         shell: bash
