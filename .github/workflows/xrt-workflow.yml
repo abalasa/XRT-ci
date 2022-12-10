@@ -112,9 +112,9 @@ jobs:
           name: xrt-rpm-centos8
       - name: Create dirs and Move RPMs
         run: |
-          mkdir -p ${{ secrets.EXTRACTION_AREA }}/results/$GITHUB_RUN_NUMBER/rpms
-          # mv *-xrt.rpm ${{ secrets.EXTRACTION_AREA }}/results/$GITHUB_RUN_NUMBER/rpms/
-          cp -rf ${{ secrets.PROJ_PATH }}/xbuilds/2023.1_daily_latest/xbb/xrt/packages/xrt_202310.2.15.82_8.1.1911-x86_64-xrt.rpm ${{ secrets.EXTRACTION_AREA }}/results/$GITHUB_RUN_NUMBER/rpms/
+          mkdir -p ${{ secrets.EXTRACTION_AREA }}/results/11/rpms
+          mv *-xrt.rpm ${{ secrets.EXTRACTION_AREA }}/results/11/rpms/
+          # cp -rf ${{ secrets.PROJ_PATH }}/xbuilds/2023.1_daily_latest/xbb/xrt/packages/xrt_202310.2.15.82_8.1.1911-x86_64-xrt.rpm ${{ secrets.EXTRACTION_AREA }}/results/$GITHUB_RUN_NUMBER/rpms/
         shell: bash
   
   # cleanup_rpms:
