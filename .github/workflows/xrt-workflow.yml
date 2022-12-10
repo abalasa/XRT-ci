@@ -190,7 +190,7 @@ jobs:
           --config-script /proj/sdxbf/beta/src/lib/boardfarm/cmds/pipeline_cmd --test-script ${resultPath}/runner.sh --output-dir ${resultPath} \
           --pipeline xrt --board u50 --debug"
         env: 
-          resultPath: ${{ secrets.EXTRACTION_AREA }}/results/${GITHUB_RUN_NUMBER}/pcie/hw/xilinx_u50_gen3x4_xdma_2_202010_1
-          profile_path: ${{ secrets.EXTRACTION_AREA }}/configs/${RELEASE}/pcie/hw/gating.prf
-          xrt_build_path: ${{ secrets.EXTRACTION_AREA }}/results/${GITHUB_RUN_NUMBER}/rpms
+          resultPath: ${{ secrets.EXTRACTION_AREA }}/results/11/pcie/hw/xilinx_u50_gen3x4_xdma_2_202010_1
+          profile_path: ${{ secrets.EXTRACTION_AREA }}/configs/2023.1/pcie/hw/gating.prf
+          xrt_build_path: ${{ secrets.EXTRACTION_AREA }}/results/11/rpms
         shell: bash
