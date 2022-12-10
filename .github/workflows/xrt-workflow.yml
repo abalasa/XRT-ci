@@ -21,96 +21,97 @@ env:
   TEST_PATH: ${{ secrets.PROJ_PATH }}/xbb/xrt/prod_pipeline/tests/2023.1/12_09_22_07
 
 jobs:
-  build_lnx_matrix:
-    strategy:
-      matrix:
-        include:
-         - os: centos8
-           packageType: rpm
-        #  - os: al2
-        #    packageType: rpm
-        #  - os: ubuntu2004
-        #    packageType: deb
-      fail-fast: false
+#   build_lnx_matrix:
+#     strategy:
+#       matrix:
+#         include:
+#          - os: centos8
+#            packageType: rpm
+#         #  - os: al2
+#         #    packageType: rpm
+#         #  - os: ubuntu2004
+#         #    packageType: deb
+#       fail-fast: false
 
-    runs-on: self-hosted-${{ matrix.os }}
-    steps:
-    # Set version number and update PATH as git needs to be greater than 2.18
-    - name: Set env variables
-      run: |
-        env
-        echo "XRT_VERSION_PATCH=${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
-        echo "PATH=/usr/bin:$PATH" >> $GITHUB_ENV 
+#     runs-on: self-hosted-${{ matrix.os }}
+#     steps:
+#     # Set version number and update PATH as git needs to be greater than 2.18
+#     - name: Set env variables
+#       run: |
+#         env
+#         echo "XRT_VERSION_PATCH=${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
+#         echo "PATH=/usr/bin:$PATH" >> $GITHUB_ENV 
 
-    - uses: actions/checkout@v3
-      with:
-        submodules: recursive
-    # - name: Check cache
-    #   id: cache-docker
-    #   if: ${{ matrix.os == 'centos8' }}
-    #   uses: actions/cache@v3
-    #   with:
-    #     path: ci/cache/docker/${{ matrix.os }}
-    #     key: cache-docker-${{ matrix.os }}
+#     - uses: actions/checkout@v3
+#       with:
+#         submodules: recursive
+#     # - name: Check cache
+#     #   id: cache-docker
+#     #   if: ${{ matrix.os == 'centos8' }}
+#     #   uses: actions/cache@v3
+#     #   with:
+#     #     path: ci/cache/docker/${{ matrix.os }}
+#     #     key: cache-docker-${{ matrix.os }}
 
-    # - name: Create image if cache misses
-    #   if: ${{ steps.cache-docker.outputs.cache-hit != 'true' && matrix.os == 'centos8' }}
-    #   run: |
-    #     cd .github/scripts/docker
-    #     docker build -f Dockerfile-centos8 -t xrt-build-env-${{ matrix.os }}:latest .
-    #     cd $GITHUB_WORKSPACE 
-    #     mkdir -p ci/cache/docker/${{ matrix.os }}
-    #     cd ci/cache/docker/${{ matrix.os }}
-    #     docker save xrt-build-env-${{ matrix.os }}:latest | gzip > xrt-${{ matrix.os }}.tar.gz
+#     # - name: Create image if cache misses
+#     #   if: ${{ steps.cache-docker.outputs.cache-hit != 'true' && matrix.os == 'centos8' }}
+#     #   run: |
+#     #     cd .github/scripts/docker
+#     #     docker build -f Dockerfile-centos8 -t xrt-build-env-${{ matrix.os }}:latest .
+#     #     cd $GITHUB_WORKSPACE 
+#     #     mkdir -p ci/cache/docker/${{ matrix.os }}
+#     #     cd ci/cache/docker/${{ matrix.os }}
+#     #     docker save xrt-build-env-${{ matrix.os }}:latest | gzip > xrt-${{ matrix.os }}.tar.gz
 
-    # - name: Use Cached image if cache hits
-    #   if: ${{ steps.cache-docker.outputs.cache-hit == 'true' && matrix.os == 'centos8' }}
-    #   run: docker load --input ./ci/cache/docker/${{ matrix.os }}/xrt-${{ matrix.os }}.tar.gz
-    # docker run --rm -e DEBUG_DIR=Debug_${{ matrix.packageType }}_${{ matrix.os }} -e REL_DIR=Release_${{ matrix.packageType }}_${{ matrix.os }} -e XRT_VERSION_PATCH=$GITHUB_RUN_NUMBER  -v $GITHUB_WORKSPACE:/opt/xrt/:shared -v /proj:/proj:shared xrt-build-env-${{ matrix.os }}:latest 'sh src/runtime_src/tools/scripts/xrtdeps.sh -docker ; cd build && chmod +x build.sh ; sh build.sh'
+#     # - name: Use Cached image if cache hits
+#     #   if: ${{ steps.cache-docker.outputs.cache-hit == 'true' && matrix.os == 'centos8' }}
+#     #   run: docker load --input ./ci/cache/docker/${{ matrix.os }}/xrt-${{ matrix.os }}.tar.gz
+#     # docker run --rm -e DEBUG_DIR=Debug_${{ matrix.packageType }}_${{ matrix.os }} -e REL_DIR=Release_${{ matrix.packageType }}_${{ matrix.os }} -e XRT_VERSION_PATCH=$GITHUB_RUN_NUMBER  -v $GITHUB_WORKSPACE:/opt/xrt/:shared -v /proj:/proj:shared xrt-build-env-${{ matrix.os }}:latest 'sh src/runtime_src/tools/scripts/xrtdeps.sh -docker ; cd build && chmod +x build.sh ; sh build.sh'
 
-    - name: Build XRT ${{ matrix.os }}
-      if: ${{ matrix.os == 'centos8' || matrix.os == 'ubuntu2004' }}
-      run: |
-        docker pull artifactory.xilinx.com/xrt-build-docker-images-local/xrt-${{ matrix.os }}:latest
-        docker run --rm -u xbuild -e DEBUG_DIR=Debug_${{ matrix.packageType }}_${{ matrix.os }} -e REL_DIR=Release_${{ matrix.packageType }}_${{ matrix.os }} -e XRT_VERSION_PATCH=$GITHUB_RUN_NUMBER  -v $GITHUB_WORKSPACE:/opt/xrt/:shared -v /proj:/proj:shared -v /tools:/tools:shared artifactory.xilinx.com/xrt-build-docker-images-local/xrt-${{ matrix.os }}:latest 'sudo src/runtime_src/tools/scripts/xrtdeps.sh -docker ; git init; cd build && chmod +x build.sh ;  ./build.sh'
-      shell: bash
+#     - name: Build XRT ${{ matrix.os }}
+#       if: ${{ matrix.os == 'centos8' || matrix.os == 'ubuntu2004' }}
+#       run: |
+#         docker pull artifactory.xilinx.com/xrt-build-docker-images-local/xrt-${{ matrix.os }}:latest
+#         docker run --rm -u xbuild -e DEBUG_DIR=Debug_${{ matrix.packageType }}_${{ matrix.os }} -e REL_DIR=Release_${{ matrix.packageType }}_${{ matrix.os }} -e XRT_VERSION_PATCH=$GITHUB_RUN_NUMBER  -v $GITHUB_WORKSPACE:/opt/xrt/:shared -v /proj:/proj:shared -v /tools:/tools:shared artifactory.xilinx.com/xrt-build-docker-images-local/xrt-${{ matrix.os }}:latest 'sudo src/runtime_src/tools/scripts/xrtdeps.sh -docker ; git init; cd build && chmod +x build.sh ;  ./build.sh'
+#       shell: bash
 
-    - name: XRT Build ${{ matrix.os }}
-      if: ${{ matrix.os == 'al2' }}
-      run: |
-        sudo src/runtime_src/tools/scripts/xrtdeps.sh -docker
-        cd build && chmod +x build.sh && ./build.sh
-      env:
-        DEBUG_DIR: Debug_${{ matrix.packageType }}_${{ matrix.os }} 
-        REL_DIR: Release_${{ matrix.packageType }}_${{ matrix.os }}
-      shell: bash
+#     - name: XRT Build ${{ matrix.os }}
+#       if: ${{ matrix.os == 'al2' }}
+#       run: |
+#         sudo src/runtime_src/tools/scripts/xrtdeps.sh -docker
+#         cd build && chmod +x build.sh && ./build.sh
+#       env:
+#         DEBUG_DIR: Debug_${{ matrix.packageType }}_${{ matrix.os }} 
+#         REL_DIR: Release_${{ matrix.packageType }}_${{ matrix.os }}
+#       shell: bash
 
-    - name: Stash files
-      # Stash files for using later in the workflow
-      uses: actions/upload-artifact@v3
-      with:
-        name: xrt-${{ matrix.packageType }}-${{ matrix.os }}
-        path: build/Release_${{ matrix.packageType }}_${{ matrix.os }}/xrt_*-xrt.${{ matrix.packageType }}
+#     - name: Stash files
+#       # Stash files for using later in the workflow
+#       uses: actions/upload-artifact@v3
+#       with:
+#         name: xrt-${{ matrix.packageType }}-${{ matrix.os }}
+#         path: build/Release_${{ matrix.packageType }}_${{ matrix.os }}/xrt_*-xrt.${{ matrix.packageType }}
 
-    - name: Stash tar.gx files on Centos8
-      if: ${{ matrix.os == 'centos8'}}
-      uses: actions/upload-artifact@v3
-      with:
-        name: xrt-rpm-tar-${{ matrix.os }}
-        path: build/Release_${{ matrix.packageType }}_${{ matrix.os }}/xrt_*-xrt.tar.gz
+#     - name: Stash tar.gx files on Centos8
+#       if: ${{ matrix.os == 'centos8'}}
+#       uses: actions/upload-artifact@v3
+#       with:
+#         name: xrt-rpm-tar-${{ matrix.os }}
+#         path: build/Release_${{ matrix.packageType }}_${{ matrix.os }}/xrt_*-xrt.tar.gz
 
   download_rpms:
     runs-on: self-hosted-centos8
-    needs: [build_lnx_matrix]
+#     needs: [build_lnx_matrix]
     steps:
-      - name: Download XRT rpms
-        uses: actions/download-artifact@v3
-        with:
-          name: xrt-rpm-centos8
+#       - name: Download XRT rpms
+#         uses: actions/download-artifact@v3
+#         with:
+#           name: xrt-rpm-centos8
       - name: Create dirs and Move RPMs
         run: |
           mkdir -p ${{ secrets.EXTRACTION_AREA }}/results/$GITHUB_RUN_NUMBER/rpms
-          mv *-xrt.rpm ${{ secrets.EXTRACTION_AREA }}/results/$GITHUB_RUN_NUMBER/rpms/
+          # mv *-xrt.rpm ${{ secrets.EXTRACTION_AREA }}/results/$GITHUB_RUN_NUMBER/rpms/
+          cp -rf ${{ secrets.PROJ_PATH }}/xbuilds/2023.1_daily_latest/xbb/xrt/packages/xrt_202310.2.15.82_8.1.1911-x86_64-xrt.rpm ${{ secrets.EXTRACTION_AREA }}/results/$GITHUB_RUN_NUMBER/rpms/
         shell: bash
   
   # cleanup_rpms:
