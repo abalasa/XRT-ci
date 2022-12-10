@@ -178,7 +178,7 @@ jobs:
       - name: Run board tests
         run: |
           mkdir -p ${resultPath}
-          echo ${{ secrets.PROJ_PATH }}/xbb/xrt/prod_pipeline/configs/bin/gen_runner.sh "${resultPath}" "${profile_path}" ${GITHUB_WORKSPACE} ${GITHUB_RUN_NUMBER} "${xrt_build_path}" xilinx_u50_gen3x4_xdma_2_202010_1 ${GITHUB_RUN_NUMBER} ${{ secrets.PROJ_PATH }}/xbb/xrt/prod_pipeline/tests/2023.1/11_28_22_11
+          echo ${{ secrets.PROJ_PATH }}/xbb/xrt/prod_pipeline/configs/bin/gen_runner.sh ${resultPath} ${profile_path} ${GITHUB_WORKSPACE} ${GITHUB_RUN_NUMBER} ${xrt_build_path} xilinx_u50_gen3x4_xdma_2_202010_1 ${GITHUB_RUN_NUMBER} ${{ secrets.PROJ_PATH }}/xbb/xrt/prod_pipeline/tests/2023.1/11_28_22_11
           ${{ secrets.PROJ_PATH }}/xbb/xrt/prod_pipeline/configs/bin/gen_runner.sh ${resultPath} ${profile_path} ${GITHUB_WORKSPACE} ${GITHUB_RUN_NUMBER} ${xrt_build_path} xilinx_u50_gen3x4_xdma_2_202010_1 ${GITHUB_RUN_NUMBER} ${{ secrets.PROJ_PATH }}/xbb/xrt/prod_pipeline/tests/2023.1/11_28_22_11
           cd boardfarm-interface/docker
           echo ./docker-compose run -e GITHUB_RUN_NUMBER=${GITHUB_RUN_NUMBER} --rm prod "python3 ./boardfarm.py --xsa-path /proj/sdxbf/xrt-test/2023.1/xilinx_u50_gen3x4_xdma_2_202010_1/latest/dsabin \
@@ -190,7 +190,7 @@ jobs:
           --config-script /proj/sdxbf/beta/src/lib/boardfarm/cmds/pipeline_cmd --test-script ${resultPath}/runner.sh --output-dir ${resultPath} \
           --pipeline xrt --board u50 --debug"
         env: 
-          resultPath: ${{ secrets.EXTRACTION_AREA }}/results/${{env.GITHUB_RUN_NUMBER}}/pcie/hw/xilinx_u50_gen3x4_xdma_2_202010_1
-          profile_path: ${{ secrets.EXTRACTION_AREA }}/configs/${{env.RELEASE}}/pcie/hw/gating.prf
-          xrt_build_path: ${{ secrets.EXTRACTION_AREA }}/results/${{env.GITHUB_RUN_NUMBER}}/rpms
+          resultPath: ${{ secrets.EXTRACTION_AREA }}/results/${GITHUB_RUN_NUMBER}/pcie/hw/xilinx_u50_gen3x4_xdma_2_202010_1
+          profile_path: ${{ secrets.EXTRACTION_AREA }}/configs/${RELEASE}/pcie/hw/gating.prf
+          xrt_build_path: ${{ secrets.EXTRACTION_AREA }}/results/${GITHUB_RUN_NUMBER}/rpms
         shell: bash
