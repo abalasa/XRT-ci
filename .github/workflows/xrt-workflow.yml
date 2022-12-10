@@ -29,8 +29,8 @@ jobs:
            packageType: rpm
         #  - os: al2
         #    packageType: rpm
-         - os: ubuntu2004
-           packageType: deb
+        #  - os: ubuntu2004
+        #    packageType: deb
       fail-fast: false
 
     runs-on: self-hosted-${{ matrix.os }}
