@@ -13,6 +13,8 @@ on:
         required: true
       EXTRACTION_AREA:
         required: true
+      TOOLS_ROOT:
+        required: true
 
 # Define environment variables
 # Can be accessed as $<envvar> or ${{ env.envvar }} in this workflow
@@ -30,8 +32,8 @@ jobs:
            packageType: rpm
         #  - os: al2
         #    packageType: rpm
-        #  - os: ubuntu2004
-        #    packageType: deb
+         - os: ubuntu2004
+           packageType: deb
       fail-fast: false
 
     runs-on: self-hosted-${{ matrix.os }}
